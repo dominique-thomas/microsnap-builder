@@ -1,0 +1,736 @@
+<!--
+  Project: MicroSnap Builder
+  Description: Standalone preview template used in the embedded iframe. Renders slide data dynamically, applies animations, and serves as the visualization layer for live editing and API-based rendering.
+  Author: Dominique Thomas (github.com/dominique-thomas)
+  License: Shared publicly for demonstration purposes only. Reuse or redistribution not permitted without permission.
+-->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MicroSnap Deck</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+
+    <style>
+      :root {
+        --accent: #00e0d8;
+        --text-light: #fff;
+        --shadow: 0 10px 25px rgba(0,0,0,0.25);
+      }
+
+      body {
+        height: 100%;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: transparent;
+        font-family: "Inter", sans-serif;
+      }
+
+      .deck-container {
+        position: relative;
+        width: 345px;
+        height: 480px;
+        overflow: hidden;
+        border-radius: 16px;
+        box-shadow: var(--shadow);
+        background: #000;
+      }
+
+      .slides {
+        display: flex;
+        height: 100%;
+        transition: transform 0.8s ease-in-out;
+      }
+
+      .slide {
+        flex: 0 0 100%;
+        width: 100%;
+        height: 100%;
+        color: var(--text-light);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        font-size: 1rem;
+        background-size: cover;
+        background-position: center;
+        padding: 1.2rem;
+        box-sizing: border-box;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+
+        user-select: none;
+        -webkit-user-select: none;
+        -ms-user-select: none;
+      }
+
+      .slide h2 {
+        font-size: 1.4rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .slide p {
+        font-size: 0.95rem;
+        max-width: 250px;
+        margin: 0 auto;
+      }
+
+      .font-small h2 {
+        font-size: 1.2rem;
+      }
+      .font-small p {
+        font-size: 0.8rem;
+        line-height: 1.3;
+      }
+
+      .font-medium h2 {
+        font-size: 1.5rem;
+      }
+      .font-medium p {
+        font-size: 0.95rem;
+        line-height: 1.4;
+      }
+
+      .font-large h2 {
+        font-size: 1.9rem;
+      }
+      .font-large p {
+        font-size: 1.1rem;
+        line-height: 1.45;
+      }
+
+      .layout-poster {
+        position: relative;
+        color: #fff;
+      }
+
+      .layout-poster .slide-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(0,0,0,0.45);
+        /* subtle fade */
+        z-index: 1;
+      }
+
+      .slide-text {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        width: 100%;
+        padding: 1rem;
+        box-sizing: border-box;
+        align-items: center;
+        text-align: center;
+        justify-content: center;
+      }
+
+      .text-top {
+        justify-content: flex-start;
+      }
+
+      .text-center {
+        justify-content: center;
+      }
+
+      .text-bottom {
+        justify-content: flex-end;
+        padding-bottom: 1.5rem;
+      }
+
+      .nav-arrows {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: absolute;
+        top: 50%;
+        left: 0;
+        width: 100%;
+        transform: translateY(-50%);
+        z-index: 10;
+        opacity: 1;
+        transition: opacity 0.4s ease;
+      }
+
+      .deck-container:not(:hover) .nav-arrows {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .nav-arrows button {
+        background: rgba(0,0,0,0.4);
+        border: none;
+        color: var(--text-light);
+        font-size: 1.1rem;
+        border-radius: 50%;
+        width: 38px;
+        height: 38px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 1;
+        cursor: pointer;
+        margin: 0 0.5rem;
+        transition: background 0.3s, opacity 0.3s;
+      }
+
+      .nav-arrows button:hover {
+        background: rgba(0,0,0,0.8);
+      }
+
+      .slide-counter {
+        position: absolute;
+        bottom: 0.6rem;
+        left: 1rem;
+        font-size: 0.8rem;
+        color: var(--text-light);
+        opacity: 0.8;
+        z-index: 5;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+        user-select: none;
+        -webkit-user-select: none;
+        -ms-user-select: none;
+      }
+
+      .controls {
+        margin-top: 1rem;
+      }
+
+      .controls button {
+        padding: 0.4rem 0.8rem;
+        border-radius: 6px;
+        border: none;
+        background: rgba(255,255,255,0.1);
+        color: var(--text-light);
+        cursor: pointer;
+      }
+
+      .layout-split {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        padding: 0;
+      }
+
+      .layout-split img {
+        flex: 0 0 auto;
+        display: block;
+        width: 100%;
+        height: 60%;
+        object-fit: cover;
+        border: none;
+        margin: 0;
+      }
+
+      .layout-split .slide-text {
+        flex: 1;
+        color: #fff;
+        padding: 1rem;
+        text-align: center;
+      }
+
+      .layout-overlay {
+        position: relative;
+        color: #fff;
+      }
+
+      .layout-overlay::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+      }
+
+      .layout-overlay .slide-text {
+        position: relative;
+        z-index: 2;
+        padding: 1rem;
+        text-align: center;
+
+      }
+
+      .slide-counter i {
+        color: var(--accent, #00e0d8);
+        font-size: 0.8rem;
+        opacity: 0.8;
+        transition: opacity 0.3s;
+        margin-left: -10px;
+        margin-right: 5px;
+      }
+
+      .slide-counter i:hover {
+        opacity: 1;
+      }
+
+      .progress-bar {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 4px;
+        width: 0;
+        border-radius: 0 2px 2px 0;
+        background: linear-gradient(90deg, #00b8ae 0%, #00d4c1 50%, #00e0d8 100%);
+        transition: width linear;
+        z-index: 20;
+      }
+
+      .fade-in {
+        animation: fadeIn 0.8s ease both;
+      }
+      .fade-in-up {
+        animation: fadeInUp 0.8s ease both;
+      }
+      .fade-in-down {
+        animation: fadeInDown 0.8s ease both;
+      }
+      .fade-in-left {
+        animation: fadeInLeft 0.8s ease both;
+      }
+      .fade-in-right {
+        animation: fadeInRight 0.8s ease both;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(15px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes fadeInDown {
+        from {
+          opacity: 0;
+          transform: translateY(-15px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes fadeInLeft {
+        from {
+          opacity: 0;
+          transform: translateX(15px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      @keyframes fadeInRight {
+        from {
+          opacity: 0;
+          transform: translateX(-15px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="deck-container">
+      <div class="progress-bar" id="progressBar"></div>
+      <div class="slides" id="slides">
+        <!-- Dynamically Generated -->
+      </div>
+      <div class="nav-arrows">
+        <button id="prevSlide">
+          <i class="fa-solid fa-chevron-left"></i>
+        </button>
+        <button id="nextSlide">
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
+      </div>
+      <div class="slide-counter">
+        <a href="https://microsnap-builder.netlify.app/" target="_blank" title="Made with MicroSnap Builder">
+          <i class="fa-solid fa-bolt"></i>
+        </a>
+        <span id="slideCounter"></span>
+      </div>
+    </div>
+    <script>
+
+      let slidesContainer = document.getElementById("slides");
+      let slides = document.querySelectorAll(".slide");
+      let counter = document.getElementById("slideCounter");
+      let progressBar = document.getElementById("progressBar");
+      let deck = document.querySelector(".deck-container");
+      let navArrows = document.querySelector(".nav-arrows");
+      let isTransitioning = false;
+      let arrowTimeout;
+      let current = 0;
+      let autoplay = false;
+      let autoplayInterval;
+      let loop = false;
+      let startX = 0;
+      let endX = 0;
+      let isSingleSlide = false;
+      let duration = 6000;
+
+      const swipeThreshold = 40;
+
+      function showArrows() {
+        clearTimeout(arrowTimeout);
+        navArrows.style.opacity = "1";
+        arrowTimeout = setTimeout(() => {
+          navArrows.style.opacity = "0";
+        }, 1500);
+      }
+
+      function animateProgress() {
+        progressBar.style.transition = "none";
+        progressBar.style.width = "0%";
+        void progressBar.offsetWidth;
+        progressBar.style.transition = "width " + duration + "ms linear";
+        progressBar.style.width = "100%";
+      }
+
+      function showSlide(index) {
+        current = (index + slides.length) % slides.length;
+        slidesContainer.style.transform = "translateX(-" + (
+        current * 100) + "%)";
+        counter.textContent = (current + 1) + "/" + slides.length;
+        animateProgress();
+      }
+
+      function nextSlide(fromAuto = false) {
+        if (isTransitioning) 
+          return;
+        isTransitioning = true;
+
+        if (fromAuto && !loop && current === slides.length - 1) {
+          isTransitioning = false;
+          return;
+        }
+
+        if (!fromAuto && current === slides.length - 1) {
+          current = 0;
+        } else {
+          current++;
+        }
+
+        showSlide(current);
+        replayTextAnimation(slides[current]);
+
+        setTimeout(() => (isTransitioning = false), 600);
+      }
+
+      function prevSlide(fromAuto = false) {
+        if (isTransitioning) 
+          return;
+        isTransitioning = true;
+
+        if (fromAuto && !loop && current === 0) {
+          isTransitioning = false;
+          return;
+        }
+
+        if (!fromAuto && current === 0) {
+          current = slides.length - 1;
+        } else {
+          current--;
+        }
+
+        showSlide(current);
+        replayTextAnimation(slides[current]);
+
+        setTimeout(() => (isTransitioning = false), 600);
+      }
+
+      function resetDeck() {
+        current = 0;
+        showSlide(current);
+
+        replayTextAnimation(slides[current]);
+        isTransitioning = false;
+      }
+
+      document
+        .getElementById("nextSlide")
+        .addEventListener("click", () => {
+          nextSlide();
+          if (autoplay) 
+            restartAutoplay();
+          }
+        );
+
+      document
+        .getElementById("prevSlide")
+        .addEventListener("click", () => {
+          prevSlide();
+          if (autoplay) 
+            restartAutoplay();
+          }
+        );
+
+      function startAutoplay() {
+        clearInterval(autoplayInterval);
+        if (!autoplay) 
+          return;
+        
+        animateProgress();
+
+        autoplayInterval = setInterval(() => {
+          nextSlide(true);
+        }, duration);
+      }
+
+      function stopAutoplay() {
+        clearInterval(autoplayInterval);
+      }
+
+      function restartAutoplay() {
+        stopAutoplay();
+        startAutoplay();
+      }
+
+      deck.addEventListener("mousemove", showArrows);
+      deck.addEventListener("touchstart", showArrows);
+
+      deck.addEventListener("touchstart", e => {
+        startX = e
+          .changedTouches[0]
+          .screenX;
+      });
+
+      deck.addEventListener("touchend", e => {
+        endX = e
+          .changedTouches[0]
+          .screenX;
+        handleSwipe();
+      });
+
+      deck.addEventListener("mousedown", e => {
+        startX = e.clientX;
+      });
+
+      deck.addEventListener("mouseup", e => {
+        endX = e.clientX;
+        handleSwipe();
+      });
+
+      function handleSwipe() {
+        if (isSingleSlide) 
+          return;
+        
+        const diff = endX - startX;
+        if (Math.abs(diff) < swipeThreshold) 
+          return;
+        
+        progressBar.style.transition = "none";
+        progressBar.style.width = "0%";
+
+        if (autoplay) 
+          restartAutoplay();
+        
+        if (diff > 0) {
+          prevSlide();
+        } else {
+          nextSlide();
+        }
+      }
+
+      function replayTextAnimation(slide) {
+        const animEls = slide.querySelectorAll("[class*='fade']");
+        if (!animEls.length) 
+          return;
+        
+        animEls.forEach(el => {
+          const fadeClass = Array
+            .from(el.classList)
+            .find(c => c.startsWith("fade"));
+          if (!fadeClass) 
+            return;
+          
+          el
+            .classList
+            .remove(fadeClass);
+
+          el.style.opacity = "0";
+
+          void el.offsetWidth;
+
+          setTimeout(() => {
+            el
+              .classList
+              .add(fadeClass);
+            el.style.opacity = "";
+            el.style.animationDelay = "0s";
+          }, 500);
+        });
+      }
+
+      function hexToRgba(hex, alpha = 0.45) {
+        if (!hex || typeof hex !== "string") 
+          return hex;
+        
+        hex = hex.trim();
+        hex = hex.replace(/;/g, "");
+
+        hex = hex.replace(/^#?([a-f0-9])([a-f0-9])([a-f0-9])$/i, (m, r, g, b) => "#" + r + r + g + g + b + b);
+
+        const result = /^#?([a-f0-9]{2})([a-f0-9]{2})([a-f0-9]{2})$/i.exec(hex);
+
+        return result
+          ? "rgba(" + parseInt(result[1], 16) + ", " + parseInt(result[2], 16) + ", " + parseInt(result[3], 16) + ", " + alpha + ")"
+          : hex;
+      }
+
+      function renderDeck(deckData, mode = "deck") {
+
+        slidesContainer = document.getElementById("slides");
+        slidesContainer.innerHTML = "";
+
+        autoplay = deckData.autoplay;
+        loop = deckData.loop;
+
+        if (deckData.slides.length === 1) {
+          isSingleSlide = true;
+        } else {
+          isSingleSlide = false;
+        }
+
+        if (deckData.slides.length > 5) {
+          deckData.slides = deckData
+            .slides
+            .slice(0, 5);
+          console.warn("Only the first 5 slides will be shown (max limit reached).");
+        }
+
+        deckData
+          .slides
+          .forEach(slide => {
+            const slideDiv = document.createElement("div");
+            slideDiv.className = "slide " + (
+            slide.layout || "");
+
+            const textDiv = document.createElement("div");
+
+            textDiv.className = "slide-text text-" + (
+            slide.position || "center") + " font-" + (
+            slide.fontSize || "medium");
+            textDiv.innerHTML = "<h2 class='textAnim " + slide.animation + "'>" + (
+            slide.title || "") + "</h2><p class='textAnim " + slide.animation + "'>" + (
+            slide.description || "") + "</p>";
+
+            if (slide.layout === "layout-split" && slide.image) {
+              const img = document.createElement("img");
+              img.src = slide.image;
+              img.alt = slide.alt || "";
+              slideDiv.appendChild(img);
+
+              textDiv.style.background = slide.background || "#0a9c97";
+            } else if (slide.background) {
+              const bg = slide
+                .background
+                .trim();
+
+              if (slide.image) {
+                slideDiv.style.background = "url('" + slide.image + "') center/cover no-repeat";
+
+              } else if (bg.includes("http") || bg.startsWith("url(")) {
+                slideDiv.style.background = bg.startsWith("url(")
+                  ? bg
+                  : "url('" + bg + "') center/cover no-repeat";
+              } else {
+                slideDiv.style.background = bg;
+              }
+
+              if (slide.layout === "layout-overlay" && slide.image) {
+                const overlay = document.createElement("div");
+                overlay.className = "slide-overlay";
+                overlay.style.position = "absolute";
+                overlay.style.inset = 0;
+                overlay.style.background = hexToRgba(slide.background);
+                slideDiv.appendChild(overlay);
+              }
+            }
+
+            slideDiv.appendChild(textDiv);
+            slidesContainer.appendChild(slideDiv);
+          });
+
+        if (mode === "export") {
+          slidesContainer = document.getElementById("slides");
+          slides = document.querySelectorAll(".slide");
+          counter = document.getElementById("slideCounter");
+          progressBar = document.getElementById("progressBar");
+          deck = document.querySelector(".deck-container");
+          navArrows = document.querySelector(".nav-arrows");
+
+          counter.textContent = (current + 1) + " / " + slides.length;
+          resetDeck();
+          startAutoplay();
+        }
+      }
+
+      window
+          .parent
+          ?
+          .postMessage({
+            type: "deckPreviewReady"
+          }, "*");
+      window.addEventListener("message", (e) => {
+        const {type, data, previewMode} = e.data || {};
+
+        if (type === "updateDeck" && data) {
+          renderDeck(data, previewMode || "export");
+          slidesContainer = document.getElementById("slides");
+          slides = document.querySelectorAll(".slide");
+          counter = document.getElementById("slideCounter");
+          progressBar = document.getElementById("progressBar");
+          deck = document.querySelector(".deck-container");
+          navArrows = document.querySelector(".nav-arrows");
+
+          const link = document.querySelector(".slide-counter a");
+
+          navArrows.style.opacity = "1"
+
+          if (previewMode === "deck") {
+            link.style.pointerEvents = "none";
+            link.style.opacity = "0.4";
+
+          } else if (previewMode === "card") {
+            link.style.pointerEvents = "none";
+            link.style.opacity = "0";
+            counter.style.display = "none";
+            progressBar.style.display = "none";
+          }
+
+          if (isSingleSlide) {
+            autoplay = false;
+            navArrows.style.display = "none";
+            progressBar.style.display = "none";
+          } else {
+            progressBar.style.display = "";
+            navArrows.style.display = "";
+          }
+
+          counter.textContent = (current + 1) + " / " + slides.length;
+
+          resetDeck();
+          startAutoplay();
+        }
+      });
+    </script>
+  </body>
+</html>

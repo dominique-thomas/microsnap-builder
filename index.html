@@ -1,0 +1,712 @@
+<!--
+  Project: MicroSnap Builder
+  Description: Main HTML entry point for the MicroSnap Builder app. Defines structure for the editor interface, preview area, and supporting scripts and styles.
+  Author: Dominique Thomas (github.com/dominique-thomas)
+  License: Shared publicly for demonstration purposes only. Reuse or redistribution not permitted without permission.
+-->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>MicroSnap Builder</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer"/>
+    <link rel="stylesheet" href="css/style.css"/>
+  </head>
+
+  <body>
+    <!-- Top Bar Header -->
+    <header class="topbar glass">
+      <div class="logo" aria-label="MicroSnap Builder Home">
+        <i class="fa-solid fa-bolt"></i> MicroSnap Builder</div>
+      <input type="checkbox" id="navToggle" class="nav-toggle"/>
+      <label for="navToggle" class="menu-icon">
+        <i class="fa-solid fa-bars"></i>
+      </label>
+      <nav class="nav" role="navigation" aria-label="Main Navigation">
+        <button data-modal-target="docsModal" title="Docs" class="navBarButton" aria-label="Open API Documentation">
+          <i class="fa-solid fa-book"></i> Docs
+        </button>
+        <button data-modal-target="aboutModal" title="About" class="navBarButton" aria-label="Learn More About MicroSnap Builder">
+          <i class="fa-solid fa-circle-info"></i> About
+        </button>
+      </nav>
+    </header>
+
+    <!-- Welcome Modal -->
+    <section id="welcomeModal" class="modal-overlay">
+      <div class="modal-card glass welcome-card">
+        <h2>Welcome to MicroSnap Builder</h2>
+        <p>Create micro-slides, quick facts, or visual stories in seconds.</p>
+        <button id="continueBtn" class="modal-card" title="Continue">
+           Continue <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </div>
+    </section>
+
+    <!-- Editor Header -->
+    <div class="editor-header">
+      <div class="inline-fields">
+        <div class="slide-select" role="group" aria-label="Slide Selection Dropdown Menu">
+
+          <!-- Slide Dropdown Menu -->
+          <div class="custom-dropdown" role="listbox" aria-label="Select a Slide">
+            <div class="dropdown-trigger" title="Select Slide" aria-haspopup="listbox" area-expanded="false">
+              <span id="currentSlideLabel">Slide 1</span>
+              <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+            </div>
+            <ul class="dropdown-menu hidden" role="listbox" aria-activedescendant="currentSlideLabel">
+              <li data-slide="1" title="Slide 1" role="option">Slide 1</li>
+            </ul>
+          </div>
+
+          <!-- Slide Actions -->
+          <div class="slide-actions" role="group" aria-label="Slide Actions">
+            <button id="addSlideBtn" title="Add New Slide" aria-label="Add New Slide">
+              <i class="fa-solid fa-plus" aria-hidden="true"></i>Add
+            </button>
+            <button id="deleteSlideBtn" title="Delete Current Slide" aria-label="Delete Current Slide">
+              <i class="fa-solid fa-trash" aria-hidden="true"></i>Delete
+            </button>
+
+            <button id="previewBtn" title="Preview Deck" aria-label="Preview Deck">
+              <i class="fa-solid fa-play" aria-hidden="true"></i>Preview
+            </button>
+            <button id="exportBtn" title="Export Deck" aria-label="Export Deck">
+              <i class="fa-solid fa-file-export" aria-hidden="true"></i>Export
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mode Toggle -->
+      <div class="mode-toggle" role="group" aria-label="Editor mode selection">
+        <span class="mode-label">Mode: Quick Edit</span>
+        <label class="switch" title="Mode Toggle" id="modeToggleParent">
+          <input type="checkbox" id="modeToggle" aria-checked="false" aria-label="Switch Between Quick Edit and Advanced Mode"/>
+          <span class="slider" aria-hidden="true"></span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Builder -->
+    <main id="builder" class="builder">
+      <div class="editor-body">
+
+        <!-- Mode: Quick Edit -->
+        <div class="editor-grid active" id="quickEditGrid">
+
+          <!-- Content Grid -->
+          <div class="group glass" id="group-content">
+            <h4>
+              <i class="fa-regular fa-pen-to-square"></i> Content</h4>
+            <div class="field">
+              <label for="slideTitle">Title</label>
+              <div class="input-with-icon">
+                <input id="slideTitle" type="text" maxlength="60" placeholder="Enter title..." value="Example Title"/>
+              </div>
+            </div>
+            <div class="field">
+              <label for="slideDescription">Description</label>
+              <div class="input-with-icon">
+                <input id="slideDescription" type="text" maxlength="180" placeholder="Enter description..." value="This is how your slide will appear."/>
+              </div>
+            </div>
+          </div>
+
+          <!-- Appearance Grid-->
+          <div class="group glass">
+            <h4>
+              <i class="fa-solid fa-brush"></i> Appearance</h4>
+
+            <div class="inline-fields">
+              <div>
+                <label for="bgColorInput">Overlay Color</label>
+                <input id="bgColorInput" type="color" value="#0a9c97" title="Background Color Picker"/>
+              </div>
+              <div>
+                <label>Font Size</label>
+                <div class="font-buttons">
+                  <button data-font="small" class="icon-btn font-size-btn small" title="Small">A</button>
+                  <button data-font="medium" class="icon-btn font-size-btn medium active" title="Medium">A</button>
+                  <button data-font="large" class="icon-btn font-size-btn large" title="Large">A</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="bgImageInput">Background Image URL</label>
+              <input id="bgImageInput" type="url" maxlength="500" placeholder="https://example.com/image.jpg"/>
+            </div>
+          </div>
+
+          <!-- Layout & Position Grid -->
+          <div class="group glass">
+            <h4>
+              <i class="fa-solid fa-layer-group"></i> Layout & Position</h4>
+            <div class="field">
+              <label>Content Alignment</label>
+              <div class="placement-grid" id="placementGrid">
+                <button class="icon-btn" data-align="top" title="Top">
+                  <img src="images/top.png">
+                </button>
+
+                <button class="icon-btn active" data-align="center" title="Center">
+                  <img src="images/center.png">
+                </button>
+                <button class="icon-btn" data-align="bottom" title="Bottom">
+                  <img src="images/bottom.png">
+                </button>
+              </div>
+            </div>
+            <div class="field">
+              <label>Layout Style</label>
+              <div class="layout-buttons">
+                <button data-layout="overlay" class="active" title="Overlay">
+                  <i class="fa-solid fa-layer-group"></i>
+                  <span> Overlay</span>
+                </button>
+                <button data-layout="poster" title="Poster">
+                  <i class="fa-solid fa-image"></i>
+                  <span> Poster</span>
+                </button>
+                <button data-layout="split" title="Split">
+                  <i class="fa-solid fa-columns"></i>
+                  <span> Split</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Animation & Timing Grid -->
+          <div class="group glass">
+            <h4>
+              <i class="fa-solid fa-clapperboard"></i> Animation & Timing</h4>
+            <div class="inline-fields">
+              <div>
+                <span>Autoplay </span>
+                <label class="switch" title="Autoplay Toggle">
+                  <input type="checkbox" id="autoplayToggle"/>
+                  <span class="slider"></span>
+                </label>
+              </div>
+              <div>
+                <span>Loop</span>
+                <label class="switch" title="Loop Animation Toggle">
+                  <input type="checkbox" id="loopToggle"/>
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+            <div class="field entryAnimationField">
+              <label>Entry Animation</label>
+              <div class="anim-buttons" id="entryAnimBtns">
+                <button class="icon-btn" data-anim="fade-in" title="Fade">
+                  <img src="images/fadein.png">
+                </button>
+                <button class="icon-btn" data-anim="fade-in-up" title="Fade (Up)">
+                  <img src="images/fadein_up.png">
+                </button>
+                <button class="icon-btn" data-anim="fade-in-down" title="Fade (Down)">
+                  <img src="images/fadein_down.png">
+                </button>
+                <button class="icon-btn" data-anim="fade-in-left" title="Fade (Left)">
+                  <img src="images/fadein_left.png">
+                </button>
+                <button class="icon-btn" data-anim="fade-in-right" title="Fade (Right)">
+                  <img src="images/fadein_right.png">
+                </button>
+                <button class="icon-btn active" data-anim="no_fade-in" title="None">
+                  <i class="fa-solid fa-ban"></i>
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Mode: Advanced (JSON) -->
+        <div class="group glas hidden" id="advancedEditor" role="region" aria-label="Advanced Editor">
+          <h4>
+            <i class="fa-solid fa-code" aria-hidden="true"></i> JSON</h4>
+          <div class="code-editor">
+            <div class="line-numbers" aria-hidden="true"></div>
+            <textarea id="jsonEditor" spellcheck="false" aria-label="Code Editor" placeholder="// Edit JSON here..."></textarea>
+          </div>
+
+          <div class="inline-code">
+            <div class="json-msg" id="jsonMsg" role="alert">
+              <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>Your code is not formatted correctly.
+          </div>
+
+            <div class="code-actions">
+              <button id="runCodeBtn" id="Run Code" title="Run Code" aria-label="Run Code Validation">
+                <i class="fa-solid fa-play" aria-hidden="true"></i> Run Code
+            </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Preview Card -->
+      <section class="preview glass">
+        <div id="previewWrapper">
+          <iframe
+          id="cardPreviewFrame"
+          title="MicroSnap Preview"
+          src="deck-preview.html"
+          loading="lazy"></iframe>
+        </div>
+      </section>
+    </main>
+
+    <!-- Docs Modal -->
+    <div id="docsModal" class="modal-overlay hidden" role="dialog" aria-modal="true">
+      <div class="modal-card glass docs-content">
+        <span class="close" data-close title="Close" aria-label="Close Modal">
+          <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+        </span>
+
+        <h2>MicroSnap Builder Documentation</h2>
+        <section>
+          <h3>Overview</h3>
+          <p>
+            MicroSnap Builder lets you design animated micro-content slides. Each slide includes text, color, animation,
+            and layout settings that can be previewed or exported as a deck.
+          </p>
+        </section>
+
+        <section>
+          <h3>Core Terms</h3>
+          <table class="doc-table">
+            <thead>
+              <tr>
+                <th>Term</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <strong>MicroSnap</strong>
+                </td>
+                <td>A self-contained micro experience: one deck of animated slides you can export or embed.</td>
+              </tr>
+              <tr>
+                <td>
+                  <strong>Slide</strong>
+                </td>
+                <td>A single card in the deck, with its own text, background, layout, and animation settings.</td>
+              </tr>
+              <tr>
+                <td>
+                  <strong>Deck</strong>
+                </td>
+                <td>An ordered collection of slides that play in sequence.</td>
+              </tr>
+              <tr>
+                <tr>
+                  <td><strong>Progress Bar</strong></td>
+                  <td>A visual indicator at the top of each slide that shows slide progression. 
+                      Appears only when there are two or more slides in the deck.</td>
+                </tr>
+                <tr>
+                  <td><strong>Slide Indicator</strong></td>
+                  <td>Displays the current slide number out of the total, e.g. "2/5". 
+                      Updates automatically as slides change.</td>
+                </tr>
+                <td>
+                  <strong>Layout</strong>
+                </td>
+                <td>Controls how image and text are arranged.</td>
+              </tr>
+              <tr>
+                <td>
+                  <strong>Position</strong>
+                </td>
+                <td>Vertical alignment of the text content.</td>
+              </tr>
+              <tr>
+                <td>
+                  <strong>Autoplay</strong>
+                </td>
+                <td>Automatically advances through the slides without user interaction.</td>
+              </tr>
+              <tr>
+                <td>
+                  <strong>Loop</strong>
+                </td>
+                <td>Restarts the deck after the last slide when Autoplay is enabled.</td>
+              </tr>
+              <tr>
+                <td>
+                  <strong>Preview Pane</strong>
+                </td>
+                <td>The live area that shows how the current slide will look as you edit.</td>
+              </tr>
+              <tr>
+                <td>
+                  <strong>Export</strong>
+                </td>
+                <td>Generates a standalone HTML version of the deck that can be hosted or embedded.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section>
+          <h3>Quick Edit Mode</h3>
+          <p>
+            The Quick Edit panel provides a visual interface to update slides instantly.
+            Fields automatically refresh the preview when you type.
+          </p>
+          <ul>
+            <li>
+              <strong>Title</strong>: Primary text (max 60 characters)</li>
+            <li>
+              <strong>Description</strong>: Secondary text (max 180 characters)</li>
+            <li>
+              <strong>Overlay Color</strong>: Adds tint over an optional image</li>
+            <li>
+              <strong>Font Size</strong>: Small, Medium, or Large</li>
+            <li>
+              <strong>Background Image</strong>: URL for image background (optional)</li>
+            <li>
+              <strong>Content Alignment</strong>: Top, Center, or Bottom</li>
+            <li>
+              <strong>Layout Style</strong>: Overlay, Poster, or Split</li>
+            <li>
+              <strong>Autoplay</strong>: Plays slides automatically (for decks with multiple slides)</li>
+            <li>
+              <strong>Loop</strong>: Restarts deck after final slide (if Autoplay is on)</li>
+            <li>
+              <strong>Entry Animation</strong>: Fade, Fade (Up), Fade (Left), Fade (Right), Fade (Down), or None</li>
+          </ul>
+        </section>
+
+        <section>
+          <h3>Advanced Mode</h3>
+          <p>
+            Advanced Mode exposes the JSON configuration for full control. Click the <strong>Run Code</strong> button to apply changes.            
+            Valid JSON will display a success message; errors will trigger a warning.
+          </p>
+          <p class="doc-note">
+            MicroSnap Builder accepts both full hex colors 
+            (e.g., <code>#00aabb</code>) and shorthand hex (e.g., <code>#0ab</code>).           
+          </p>
+
+          <h4>Example</h4>          
+          <pre><code>
+{
+  "slides": [
+    {
+      "title": "Example Title",
+      "description": "This is how your slide will appear.",
+      "layout": "layout-overlay",
+      "position": "center",
+      "fontSize": "medium",
+      "background": "#0a9c97",
+      "image": "",
+      "animation": "none"
+    }
+  ],
+  "autoplay": false,
+  "loop": false
+}
+    </code></pre>
+        </section>
+
+        <section>
+          <h3>Toolbar Buttons</h3>
+          <ul>
+            <li>
+              <strong>Slide Dropdown</strong>: Switch between slides.</li>
+            <li>
+              <strong>Add</strong>: Create a new slide.</li>
+            <li>
+              <strong>Delete</strong>: Remove current slide (confirmation required).</li>
+            <li>
+              <strong>Preview</strong>: View the entire deck.</li>
+            <li>
+              <strong>Export</strong>: Download the complete deck.</li>
+            <li>
+              <strong>Toggle Mode</strong>: Toggle between Quick Edit and Advanced modes.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h3>API Overview</h3>
+           <p>
+            The MicroSnap Builder API can be used in automated workflows or scripts by sending JSON and saving
+            the returned HTML. This makes it possible to generate MicroSnap decks without using
+            the editor interface.            
+          </p>
+
+          <h4>Example Request</h4>
+          <pre><code>
+POST /api/render
+Content-Type: application/json
+
+{
+"slides": [
+  {
+    "title": "Example Title",
+    "description": "This is how your slide will appear.",
+    "layout": "layout-overlay",
+    "position": "center",
+    "fontSize": "medium",
+    "background": "#0a9c97",
+    "image": "",
+    "animation": "none"
+  }
+],
+  "autoplay": false,
+  "loop": false
+}
+          </code></pre>
+          <h4>Example Response</h4>
+<pre><code>
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;title&gt;MicroSnap Deck&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div class="microsnap-deck"&gt;
+    &lt;div class="slide layout-overlay" 
+         style="background:#0a9c97;"&gt;
+      &lt;div class="slide-text text-center font-medium"&gt;
+        &lt;h2&gt;Example Title&lt;/h2&gt;
+        &lt;p&gt;This is how your slide will appear.&lt;/p&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>          
+        </section>
+
+        <section>
+          <h3>General Tips</h3>
+
+          <h4>1. Background Images</h4>
+          <p>
+            MicroSnap Builder is optimized for a <strong>345px x 480px</strong> display area,
+            which aligns roughly to a <strong>5:7</strong> portrait ratio. Using images close
+            to this shape helps maintain visual consistency and reduces unwanted cropping.
+          </p>
+
+          <p>
+            For <strong>Poster</strong> and <strong>Overlay</strong> layouts, portrait images
+            tend to work best. For the <strong>Split</strong> layout, only the top
+            <strong>60 percent</strong> of the image is visible. It helps to keep any focal
+            point or important detail near the upper half of the image so that it stays in view.
+          </p>
+
+          <h4>2. Image-Only Slides</h4>
+          <p>
+            To display a slide that contains only an image, leave the <code>"title"</code> and
+            <code>"description"</code> fields empty. The image and chosen layout will still
+            render normally.
+          </p>
+
+          <h4>Example</h4>          
+          <pre><code>
+{
+  "slides": [
+    {
+      "title": "",
+      "description": "",
+      "image": "https://example.com/image.jpg",
+      //...
+    }
+  ]
+}
+          </code></pre>
+
+          <h4>3. Text Length</h4>
+          <p>
+            Titles and descriptions generally look best when kept short and focused. Concise text
+            improves readability and preserves visual balance across all layouts.
+          </p>
+
+          <h4>4. Minified Export</h4>
+          <p>
+            Exported decks include minified CSS and JavaScript to keep the file size lightweight.
+            If you need to inspect or customize the output, you can run the exported file through
+            any HTML/CSS/JS formatter or unminifier.
+          </p>
+
+          <h4>5. Local Images</h4>
+          <p>
+            MicroSnap Builder supports your own images. When working locally, place image
+            files inside a folder named <strong>example</strong> so they can be referenced
+            properly during playback. Files can be referenced by their relative path, such as
+            <code>example/engine.png</code>.
+          </p>
+        </section>
+
+
+
+
+        <section>
+          <h3>Quick Troubleshooting</h3>
+          <p>
+            If your deck doesn't render correctly in <strong>Advanced Mode</strong>, here are common issues and how to fix them.
+          </p>
+
+          <h4>1. JSON Formatting Errors</h4>
+          <p>
+            Each key and value must be enclosed in quotes, and commas are required between objects.  Leave off the comma after the last item in a list or object to prevent creating a trailing comma. Use <strong>Run Code</strong>
+            to check for syntax issues, a green success message appears when valid.
+          </p>
+
+          <div class="example-block">
+            <p><strong>✅ Correct Format Example</strong></p>
+            <pre><code>
+{
+  "slides": [
+    {
+      "title": "Hello World",
+      "description": "First test slide",
+      "background": "#0a9c97",
+      "image": "",
+      "animation": "Fade"
+    }
+  ]
+}
+</code></pre>
+          </div>
+
+          <div class="example-block">
+            
+            <p><strong>❌ Incorrect Format Example</strong> (missing comma at the end of title)</p>
+            <pre><code>
+{
+  "slides": [
+    {
+      "title": "Hello World"
+      "description": "Missing comma between fields"
+    }
+  ]
+}
+          </code></pre>
+          </div>
+
+
+          <h4>2. Unsupported Fields</h4>
+          <p class="modal-card-block">
+            Any field not part of the supported schema will be ignored. Stick to the
+            documented keys: <code>title</code>, <code>description</code>, <code>background</code>,
+            <code>image</code>, <code>layout</code>, <code>position</code>, <code>fontSize</code>, and <code>animation</code>.
+          </p>
+
+          <h4>3. No Preview Updates</h4>
+          <p>
+            If the preview doesn't refresh, make sure your JSON is valid and you clicked <strong>Run Code</strong>.
+            The Quick Edit panel updates automatically, but Advanced Mode requires manual validation.
+            Also note that updates apply to the slide you're currently viewing. For example, if you edit Slide 2
+            while viewing Slide 1, you won't see the change until you switch to that slide.
+          </p>
+        </section>
+
+      </div>
+    </div>
+
+    <!-- About Modal -->
+    <div id="aboutModal" class="modal-overlay hidden" role="dialog" aria-modal="true">
+      <div class="modal-card glass">
+        <span class="close" data-close title="Close" aria-label="Close Modal">
+          <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+        </span>
+        <h2>
+          About MicroSnap Builder</h2>
+        <p>
+            MicroSnap Builder is a lightweight web app for creating and sharing short, visual
+            slide decks. Slides can be designed through the interactive editor or generated
+            dynamically by sending JSON to the render API. The editor exports a standalone HTML
+            file, while the API returns the same HTML as plain text so it can be saved, embedded,
+            or hosted as needed. This project is provided as-is for educational and demonstration
+            purposes.
+          <br><br>
+          The application was designed and developed by 
+          <a href="https://www.linkedin.com/in/dominique-thomas-ab56b433/" target="_blank" title="Dominique Thomas">Dominique Thomas</a>.
+
+          
+          Button icons provided by
+          <a href="https://fontawesome.com/" target="_blank" title="Font Awesome">Font Awesome</a> and 
+          <a href="https://www.flaticon.com/" target="_blank" title="Flat Icon">Flat Icon</a>.
+        </p>
+      </div>
+    </div>
+
+    <!-- Warning Modal - One Slide -->
+    <div id="warningOneSlideModal" class="modal-overlay hidden" role="dialog" aria-modal="true">
+      <div class="modal-card glass">
+        <span class="close" data-close title="Close" aria-label="Close Modal">
+          <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+        </span>
+        <h2>
+          <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i> Warning!</h2>
+        <p>Could not delete slide. You need at least one slide in your deck.</p>        
+      </div>
+    </div>
+
+    <!-- Warning Modal - Max Slides -->
+    <div id="warningMaxSlideModal" class="modal-overlay hidden" role="dialog" aria-modal="true">
+      <div class="modal-card glass">
+        <span class="close" data-close title="Close" aria-label="Close Modal">
+          <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+        </span>
+        <h2>
+          <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i> Warning!</h2>
+        <p>Could not add slide. Decks support a maximum of 5 slides.</p>        
+      </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteSlideModal" class="modal-overlay hidden" role="dialog" aria-modal="true">
+      <div class="modal-card glass">
+        <span class="close" data-close title="Close" aria-label="Close Modal">
+          <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+        </span>
+        <h2>
+          <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i> Delete Slide?</h2>
+        <p>Are you sure you want to delete this slide?</p>
+        <div class="modal-actions">
+          <button id="confirmDelete" class="danger" title="Yes, Delete">
+            <i class="fa-solid fa-trash" aria-hidden="true"></i> Yes, Delete
+          </button>
+          <button data-close title="Cancel">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Deck Preview Modal -->
+    <div id="deckPreviewModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="deckPreviewTitle">
+      <div class="modal-card deck-preview-card glass">
+        <span class="close" data-close title="Close" aria-label="Close Modal">
+          <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+        </span>
+
+        <h2 id="deckPreviewTitle" class="deck-preview-title">
+           Deck Preview
+        </h2>
+
+        <div id="deckPreviewContainer" class="deck-preview-container">
+          <iframe
+            id="deckPreviewFrame"
+            title="MicroSnap Deck Preview"
+            src="deck-preview.html"
+            loading="lazy"
+          ></iframe>
+        </div>
+      </div>
+    </div>
+    <script src="js/preview-css.js"></script>
+    <script src="js/preview-script.js"></script>
+    <script src="js/index.js"></script>
+  </body>
+</html>
