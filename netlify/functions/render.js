@@ -1,12 +1,12 @@
 const fs = require("fs");
 const path = require("path");
 
-function generateExportHtml(deckData) {
+async function generateExportHtml(deckData) {
     const deckJson = JSON.stringify(deckData, null, 2);
-    const cssPath = "../../js/preview-css.js";
-    const scriptPath = "../../js/preview-script.js";
-    const previewCss = fs.readFileSync(cssPath, "utf-8");
-    const previewScript = fs.readFileSync(scriptPath, "utf-8");
+    const cssResponse = await fetch("https://microsnap-builder.netlify.app/js/preview-css.js");
+    const scriptResponse = await fetch("https://microsnap-builder.netlify.app/js/preview-script.js");
+    const previewCss = await cssResponse.text();
+    const previewScript = await scriptResponse.text();
     const css = previewCss.match(/`([\s\S]*?)`/)[1];
     const script = previewScript.match(/`([\s\S]*?)`/)[1];
 
@@ -45,7 +45,7 @@ function generateExportHtml(deckData) {
 exports.handler = async (event) => {
     try {
         const body = JSON.parse(event.body);
-        const html = generateExportHtml(body);
+        const html = await generateExportHtml(body);
 
         return {
             statusCode: 200,
