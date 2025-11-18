@@ -9,7 +9,7 @@
       "position": "center",
       "fontSize": "large",
       "background": "#000000",
-      "image": "example/engine.png",
+      "image": "https://microsnap-builder.netlify.app/example/engine.png",
       "animation": "fade-in"
     },
     {
@@ -19,7 +19,7 @@
       "position": "top",
       "fontSize": "medium",
       "background": "#292929",
-      "image": "example/intake.png",
+      "image": "https://microsnap-builder.netlify.app/example/intake.png",
       "animation": "fade-in-right"
     },
     {
@@ -39,7 +39,7 @@
       "position": "top",
       "fontSize": "medium",
       "background": "#1f1f1f",
-      "image": "example/spark_plug.png",
+      "image": "https://microsnap-builder.netlify.app/example/spark_plug.png",
       "animation": "fade-in-down"
     },
     {
@@ -49,7 +49,7 @@
       "position": "center",
       "fontSize": "medium",
       "background": "#292929",
-      "image": "example/piston.png",
+      "image": "https://microsnap-builder.netlify.app/example/piston.png",
       "animation": "fade-in-down"
     }
   ]
