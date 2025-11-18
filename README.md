@@ -14,7 +14,6 @@ This project was created to explore efficient ways of presenting small pieces of
 
 ## Technologies Used
 - HTML, CSS, JavaScript  
-- Node.js with Express (export/render API)  
 - Client-side JSON rendering engine  
 
 ## Author
