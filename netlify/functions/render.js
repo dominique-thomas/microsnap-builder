@@ -3,8 +3,8 @@ const path = require("path");
 
 function generateExportHtml(deckData) {
     const deckJson = JSON.stringify(deckData, null, 2);
-    const cssPath = path.join(process.cwd(), "js/preview-css.js");
-    const scriptPath = path.join(process.cwd(), "js/preview-script.js");
+    const cssPath = "../../js/preview-css.js";
+    const scriptPath = "../../js/preview-script.js";
 
     const previewCss = fs.readFileSync(cssPath, "utf-8");
     const previewScript = fs.readFileSync(scriptPath, "utf-8");
