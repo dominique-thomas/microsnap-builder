@@ -412,10 +412,125 @@
             Advanced Mode exposes the JSON configuration for full control. Click the <strong>Run Code</strong> button to apply changes.            
             Valid JSON will display a success message; errors will trigger a warning.
           </p>
-          <p class="doc-note">
-            MicroSnap Builder accepts both full hex colors 
-            (e.g., <code>#00aabb</code>) and shorthand hex (e.g., <code>#0ab</code>).           
-          </p>
+
+          <div class="modal-card-block">
+            <h4>Supported JSON Fields</h4>
+            <p>
+              These are the available keys and accepted values when editing a deck in Advanced Mode. 
+              Slide fields apply to each object inside the <code>slides</code> array, while deck settings 
+              apply to the deck itself.
+            </p>
+
+            <div class="json-schema-table">
+              <table class="doc-table">
+                <thead>
+                  <tr>
+                    <th>Key</th>
+                    <th>Type</th>
+                    <th>Scope</th>
+                    <th>Accepted Values</th>
+                  </tr>
+                </thead>
+                <tbody>
+
+                  <!-- Slide Fields -->
+                  <tr>
+                    <td><code>title</code></td>
+                    <td>string</td>
+                    <td>Slide</td>
+                    <td>Any text (max 60 characters)</td>
+                  </tr>
+
+                  <tr>
+                    <td><code>description</code></td>
+                    <td>string</td>
+                    <td>Slide</td>
+                    <td>Any text (max 180 characters)</td>
+                  </tr>
+
+                  <tr>
+                    <td><code>layout</code></td>
+                    <td>string</td>
+                    <td>Slide</td>
+                    <td>
+                      <code>layout-overlay</code>, 
+                      <code>layout-poster</code>, 
+                      <code>layout-split</code>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td><code>position</code></td>
+                    <td>string</td>
+                    <td>Slide</td>
+                    <td>
+                      <code>top</code>, 
+                      <code>center</code>, 
+                      <code>bottom</code>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td><code>fontSize</code></td>
+                    <td>string</td>
+                    <td>Slide</td>
+                    <td>
+                      <code>small</code>, 
+                      <code>medium</code>, 
+                      <code>large</code>
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td><code>background</code></td>
+                    <td>string</td>
+                    <td>Slide</td>
+                    <td>Hex color (full or shorthand)</td>
+                  </tr>
+
+                  <tr>
+                    <td><code>image</code></td>
+                    <td>string</td>
+                    <td>Slide</td>
+                    <td>
+                      Image URL or relative path 
+                      (e.g., <code>example/your-image.jpg</code>)
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td><code>animation</code></td>
+                    <td>string</td>
+                    <td>Slide</td>
+                    <td>
+                      <code>fade-in</code>, 
+                      <code>fade-in-up</code>, 
+                      <code>fade-in-down</code>, 
+                      <code>fade-in-left</code>, 
+                      <code>fade-in-right</code>, 
+                      <code>no_fade-in</code>
+                    </td>
+                  </tr>
+
+                  <!-- Deck Settings -->
+                  <tr>
+                    <td><code>autoplay</code></td>
+                    <td>boolean</td>
+                    <td>Deck</td>
+                    <td><code>true</code> or <code>false</code></td>
+                  </tr>
+
+                  <tr>
+                    <td><code>loop</code></td>
+                    <td>boolean</td>
+                    <td>Deck</td>
+                    <td><code>true</code> or <code>false</code></td>
+                  </tr>
+
+                </tbody>
+              </table>
+            </div>
+          </div>
 
           <h4>Example</h4>          
           <pre><code>
@@ -602,10 +717,18 @@ Content-Type: application/json
           <h4>2. Unsupported Fields</h4>
           <p class="modal-card-block">
             Any field not part of the supported schema will be ignored. Stick to the
-            documented keys: <code>title</code>, <code>description</code>, <code>background</code>,
-            <code>image</code>, <code>layout</code>, <code>position</code>, <code>fontSize</code>, and <code>animation</code>.
+            documented keys: 
+            <code>title</code>, 
+            <code>description</code>, 
+            <code>layout</code>, 
+            <code>position</code>, 
+            <code>fontSize</code>, 
+            <code>background</code>, 
+            <code>image</code>, 
+            <code>animation</code>, 
+            <code>autoplay</code>, and
+            <code>loop</code>.
           </p>
-
           <h4>3. No Preview Updates</h4>
           <p>
             If the preview doesn't refresh, make sure your JSON is valid and you clicked <strong>Run Code</strong>.

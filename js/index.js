@@ -287,10 +287,7 @@ function sendToCardPreview(slide) {
     previewMode: "card",
   };
 
-  iframe.onload = () => {
-    iframe.contentWindow.postMessage(message, "*");
-  };
-  iframe.src = iframe.src;
+  debouncedPost(iframe, message);
 }
 
 // Handles adding a new slide
@@ -669,6 +666,22 @@ function resetEditorButtons() {
     btn.classList.toggle("active", btn.dataset.anim === "no_fade-in");
   });
 }
+
+// Helper function to delay calling a function
+function debounce(func, delay = 200) {
+  let timer;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => func(...args), delay);
+  };
+}
+
+// Debounce sender
+const debouncedPost = debounce((iframe, message) => {
+  if (iframe && iframe.contentWindow) {
+    iframe.contentWindow.postMessage(message, "*");
+  }
+}, 80);
 
 // Helper function that is used to help generate the HTML content
 function generateExportHtml() {
