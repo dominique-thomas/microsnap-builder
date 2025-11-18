@@ -413,8 +413,8 @@
       }
 
       function nextSlide(fromAuto = false) {
-        if (isTransitioning) 
-          return;
+        if (isTransitioning) return;
+
         isTransitioning = true;
 
         if (fromAuto && !loop && current === slides.length - 1) {
@@ -435,8 +435,8 @@
       }
 
       function prevSlide(fromAuto = false) {
-        if (isTransitioning) 
-          return;
+        if (isTransitioning) return;
+
         isTransitioning = true;
 
         if (fromAuto && !loop && current === 0) {
@@ -464,18 +464,14 @@
         isTransitioning = false;
       }
 
-      document
-        .getElementById("nextSlide")
-        .addEventListener("click", () => {
+      document.getElementById("nextSlide").addEventListener("click", () => {
           nextSlide();
           if (autoplay) 
             restartAutoplay();
           }
         );
 
-      document
-        .getElementById("prevSlide")
-        .addEventListener("click", () => {
+      document.getElementById("prevSlide").addEventListener("click", () => {
           prevSlide();
           if (autoplay) 
             restartAutoplay();
@@ -484,11 +480,10 @@
 
       function startAutoplay() {
         clearInterval(autoplayInterval);
-        if (!autoplay) 
-          return;
+
+        if (!autoplay) return;
         
         animateProgress();
-
         autoplayInterval = setInterval(() => {
           nextSlide(true);
         }, duration);
@@ -507,15 +502,11 @@
       deck.addEventListener("touchstart", showArrows);
 
       deck.addEventListener("touchstart", e => {
-        startX = e
-          .changedTouches[0]
-          .screenX;
+        startX = e.changedTouches[0].screenX;
       });
 
       deck.addEventListener("touchend", e => {
-        endX = e
-          .changedTouches[0]
-          .screenX;
+        endX = e.changedTouches[0].screenX;
         handleSwipe();
       });
 
@@ -529,18 +520,15 @@
       });
 
       function handleSwipe() {
-        if (isSingleSlide) 
-          return;
+        if (isSingleSlide) return;
         
         const diff = endX - startX;
-        if (Math.abs(diff) < swipeThreshold) 
-          return;
+        if (Math.abs(diff) < swipeThreshold) return;
         
         progressBar.style.transition = "none";
         progressBar.style.width = "0%";
 
-        if (autoplay) 
-          restartAutoplay();
+        if (autoplay) restartAutoplay();
         
         if (diff > 0) {
           prevSlide();
@@ -551,28 +539,20 @@
 
       function replayTextAnimation(slide) {
         const animEls = slide.querySelectorAll("[class*='fade']");
-        if (!animEls.length) 
-          return;
+        if (!animEls.length) return;
         
         animEls.forEach(el => {
-          const fadeClass = Array
-            .from(el.classList)
-            .find(c => c.startsWith("fade"));
-          if (!fadeClass) 
-            return;
-          
-          el
-            .classList
-            .remove(fadeClass);
 
+          const fadeClass = Array.from(el.classList).find(c => c.startsWith("fade"));          
+          if (!fadeClass) return;
+          
+          el.classList.remove(fadeClass);
           el.style.opacity = "0";
 
           void el.offsetWidth;
 
           setTimeout(() => {
-            el
-              .classList
-              .add(fadeClass);
+            el.classList.add(fadeClass);
             el.style.opacity = "";
             el.style.animationDelay = "0s";
           }, 500);
@@ -580,8 +560,7 @@
       }
 
       function hexToRgba(hex, alpha = 0.45) {
-        if (!hex || typeof hex !== "string") 
-          return hex;
+        if (!hex || typeof hex !== "string") return hex;
         
         hex = hex.trim();
         hex = hex.replace(/;/g, "");
@@ -610,21 +589,16 @@
         }
 
         if (deckData.slides.length > 5) {
-          deckData.slides = deckData
-            .slides
-            .slice(0, 5);
+          deckData.slides = deckData.slides.slice(0, 5);
           console.warn("Only the first 5 slides will be shown (max limit reached).");
         }
 
-        deckData
-          .slides
-          .forEach(slide => {
+        deckData.slides.forEach(slide => {
             const slideDiv = document.createElement("div");
             slideDiv.className = "slide " + (
             slide.layout || "");
 
             const textDiv = document.createElement("div");
-
             textDiv.className = "slide-text text-" + (
             slide.position || "center") + " font-" + (
             slide.fontSize || "medium");
@@ -633,6 +607,7 @@
             slide.description || "") + "</p>";
 
             if (slide.layout === "layout-split" && slide.image) {
+
               const img = document.createElement("img");
               img.src = slide.image;
               img.alt = slide.alt || "";
@@ -640,17 +615,12 @@
 
               textDiv.style.background = slide.background || "#0a9c97";
             } else if (slide.background) {
-              const bg = slide
-                .background
-                .trim();
+              const bg = slide.background.trim();
 
               if (slide.image) {
                 slideDiv.style.background = "url('" + slide.image + "') center/cover no-repeat";
-
               } else if (bg.includes("http") || bg.startsWith("url(")) {
-                slideDiv.style.background = bg.startsWith("url(")
-                  ? bg
-                  : "url('" + bg + "') center/cover no-repeat";
+                slideDiv.style.background = bg.startsWith("url(")? bg : "url('" + bg + "') center/cover no-repeat";
               } else {
                 slideDiv.style.background = bg;
               }
@@ -683,16 +653,13 @@
         }
       }
 
-      window
-          .parent
-          ?
-          .postMessage({
-            type: "deckPreviewReady"
-          }, "*");
+      window.parent?.postMessage({type: "deckPreviewReady"}, "*");
+
       window.addEventListener("message", (e) => {
         const {type, data, previewMode} = e.data || {};
 
         if (type === "updateDeck" && data) {
+          
           renderDeck(data, previewMode || "export");
           slidesContainer = document.getElementById("slides");
           slides = document.querySelectorAll(".slide");
@@ -708,7 +675,6 @@
           if (previewMode === "deck") {
             link.style.pointerEvents = "none";
             link.style.opacity = "0.4";
-
           } else if (previewMode === "card") {
             link.style.pointerEvents = "none";
             link.style.opacity = "0";

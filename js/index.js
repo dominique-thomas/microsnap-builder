@@ -618,7 +618,6 @@ function loadSlideToEditor(slide) {
 
   animButtons.forEach((btn) => {
     const isActive = `${btn.dataset.anim}` === slide.animation;
-    console.log(`layout-${btn.dataset.anim}`)
     btn.classList.toggle("active", isActive);
   });
 
@@ -710,4 +709,5 @@ function generateExportHtml() {
 //  Init
 //----------------------------------
 sendToCardPreview(allSlidesData.slides[0]);
+loadSlideToEditor(allSlidesData.slides[0]);
 resetEditorButtons();

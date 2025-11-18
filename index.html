@@ -10,6 +10,9 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>MicroSnap Builder</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer"/>
     <link rel="stylesheet" href="css/style.css"/>
   </head>
@@ -272,8 +275,8 @@
         <section>
           <h3>Overview</h3>
           <p>
-            MicroSnap Builder lets you design animated micro-content slides. Each slide includes text, color, animation,
-            and layout settings that can be previewed or exported as a deck.
+            MicroSnap Builder lets you design animated micro-content slides. Each slide can include text, color, animation,
+            and layout settings that can be previewed or exported as a full deck (standalone HTML file).
           </p>
         </section>
 
@@ -356,10 +359,28 @@
         </section>
 
         <section>
+          <h3>Toolbar Buttons</h3>
+          <ul>
+            <li>
+              <strong>Slide Dropdown</strong>: Switch between slides.</li>
+            <li>
+              <strong>Add</strong>: Create a new slide.</li>
+            <li>
+              <strong>Delete</strong>: Remove current slide (confirmation required).</li>
+            <li>
+              <strong>Preview</strong>: View the entire deck.</li>
+            <li>
+              <strong>Export</strong>: Download the complete deck.</li>
+            <li>
+              <strong>Toggle Mode</strong>: Toggle between Quick Edit and Advanced modes.</li>
+          </ul>
+        </section>        
+
+        <section>
           <h3>Quick Edit Mode</h3>
           <p>
             The Quick Edit panel provides a visual interface to update slides instantly.
-            Fields automatically refresh the preview when you type.
+            Fields automatically refresh the preview when you type or select a button.
           </p>
           <ul>
             <li>
@@ -418,28 +439,10 @@
         </section>
 
         <section>
-          <h3>Toolbar Buttons</h3>
-          <ul>
-            <li>
-              <strong>Slide Dropdown</strong>: Switch between slides.</li>
-            <li>
-              <strong>Add</strong>: Create a new slide.</li>
-            <li>
-              <strong>Delete</strong>: Remove current slide (confirmation required).</li>
-            <li>
-              <strong>Preview</strong>: View the entire deck.</li>
-            <li>
-              <strong>Export</strong>: Download the complete deck.</li>
-            <li>
-              <strong>Toggle Mode</strong>: Toggle between Quick Edit and Advanced modes.</li>
-          </ul>
-        </section>
-
-        <section>
           <h3>API Overview</h3>
            <p>
             The MicroSnap Builder API can be used in automated workflows or scripts by sending JSON and saving
-            the returned HTML. This makes it possible to generate MicroSnap decks without using
+            the returned HTML content. This makes it possible to generate MicroSnap decks without using
             the editor interface.            
           </p>
 
@@ -559,8 +562,8 @@ Content-Type: application/json
 
           <h4>1. JSON Formatting Errors</h4>
           <p>
-            Each key and value must be enclosed in quotes, and commas are required between objects.  Leave off the comma after the last item in a list or object to prevent creating a trailing comma. Use <strong>Run Code</strong>
-            to check for syntax issues, a green success message appears when valid.
+            Each key and value must be enclosed in quotes, and commas are required between objects.  Leave off the comma after the last item in a list or object to prevent creating trailing commas. Click the <strong>Run Code</strong> button
+            to check for syntax issues. A green success message appears when your data is valid.
           </p>
 
           <div class="example-block">
@@ -582,7 +585,7 @@ Content-Type: application/json
 
           <div class="example-block">
             
-            <p><strong>❌ Incorrect Format Example</strong> (missing comma at the end of title)</p>
+            <p><strong>❌ Incorrect Format Example</strong><br>(Missing comma at the end of title)</p>
             <pre><code>
 {
   "slides": [
@@ -624,14 +627,14 @@ Content-Type: application/json
         <h2>
           About MicroSnap Builder</h2>
         <p>
-            MicroSnap Builder is a lightweight web app for creating and sharing short, visual
+            MicroSnap Builder is a lightweight web app for creating short, visual
             slide decks. Slides can be designed through the interactive editor or generated
             dynamically by sending JSON to the render API. The editor exports a standalone HTML
             file, while the API returns the same HTML as plain text so it can be saved, embedded,
             or hosted as needed. This project is provided as-is for educational and demonstration
             purposes.
           <br><br>
-          The application was designed and developed by 
+          The project was designed and developed by 
           <a href="https://www.linkedin.com/in/dominique-thomas-ab56b433/" target="_blank" title="Dominique Thomas">Dominique Thomas</a>.
 
           

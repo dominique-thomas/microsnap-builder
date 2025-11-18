@@ -44,7 +44,7 @@
     },
     {
       "title": "Engine Cycle Recap",
-      "description": "Intake → Compression → Ignition → Exhaust",
+      "description": "Intake → Compression → Ignition",
       "layout": "layout-split",
       "position": "center",
       "fontSize": "medium",
