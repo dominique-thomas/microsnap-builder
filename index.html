@@ -276,7 +276,8 @@
           <h3>Overview</h3>
           <p>
             MicroSnap Builder lets you design animated micro-content slides. Each slide can include text, color, animation,
-            and layout settings that can be previewed or exported as a full deck (standalone HTML file).
+            and layout settings that can be previewed or exported as a full deck.
+            Exported decks are standalone HTML files that can be opened directly or hosted anywhere static files are supported.
           </p>
         </section>
 
@@ -379,7 +380,7 @@
         <section>
           <h3>Quick Edit Mode</h3>
           <p>
-            The Quick Edit panel provides a visual interface to update slides instantly.
+            The Quick Edit panel provides a visual interface to update slides instantly. Decks always contain at least one slide and support up to five slides.
             Fields automatically refresh the preview when you type or select a button.
           </p>
           <ul>
@@ -438,14 +439,14 @@
                     <td><code>title</code></td>
                     <td>string</td>
                     <td>Slide</td>
-                    <td>Any text (max 60 characters)</td>
+                    <td>Optional text (max 60 characters)</td>
                   </tr>
 
                   <tr>
                     <td><code>description</code></td>
                     <td>string</td>
                     <td>Slide</td>
-                    <td>Any text (max 180 characters)</td>
+                    <td>Optional text (max 180 characters)</td>
                   </tr>
 
                   <tr>
@@ -493,7 +494,7 @@
                     <td>string</td>
                     <td>Slide</td>
                     <td>
-                      Image URL or relative path 
+                      Optional image URL or relative path 
                       (e.g., <code>example/your-image.jpg</code>)
                     </td>
                   </tr>
