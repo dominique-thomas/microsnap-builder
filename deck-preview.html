@@ -361,9 +361,7 @@
         </button>
       </div>
       <div class="slide-counter">
-        <a href="https://microsnap-builder.netlify.app/" target="_blank" title="Made with MicroSnap Builder">
-          <i class="fa-solid fa-bolt"></i>
-        </a>
+        <a href="https://microsnap-builder.netlify.app/" target="_blank" title="Made with MicroSnap Builder"><i class="fa-solid fa-bolt"></i></a>
         <span id="slideCounter"></span>
       </div>
     </div>
@@ -647,7 +645,20 @@
           deck = document.querySelector(".deck-container");
           navArrows = document.querySelector(".nav-arrows");
 
+          navArrows.style.opacity = "1";
+          
+          if (isSingleSlide) {
+            autoplay = false;
+            navArrows.style.display = "none";
+            progressBar.style.display = "none";
+            navArrows.style.opacity = "0";
+          } else {
+            progressBar.style.display = "";
+            navArrows.style.display = "";
+          }
+
           counter.textContent = (current + 1) + " / " + slides.length;
+
           resetDeck();
           startAutoplay();
         }
@@ -670,7 +681,7 @@
 
           const link = document.querySelector(".slide-counter a");
 
-          navArrows.style.opacity = "1"
+          navArrows.style.opacity = "1";
 
           if (previewMode === "deck") {
             link.style.pointerEvents = "none";
@@ -686,6 +697,7 @@
             autoplay = false;
             navArrows.style.display = "none";
             progressBar.style.display = "none";
+            navArrows.style.opacity = "0";
           } else {
             progressBar.style.display = "";
             navArrows.style.display = "";
