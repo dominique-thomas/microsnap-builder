@@ -7,8 +7,10 @@ async function generateExportHtml(deckData) {
     const scriptResponse = await fetch("https://microsnap-builder.netlify.app/js/preview-script.js");
     const previewCss = await cssResponse.text();
     const previewScript = await scriptResponse.text();
-    const css = previewCss.match(/`([\s\S]*?)`/)[1];
-    const script = previewScript.match(/`([\s\S]*?)`/)[1];
+    const cssMatch = previewCss.match(/`([\s\S]*?)`/);
+    const css = cssMatch ? cssMatch[1] : "";
+    const scriptMatch = previewScript.match(/`([\s\S]*?)`/);
+    const script = scriptMatch ? scriptMatch[1] : "";
 
     return `<!DOCTYPE html>
     <html lang="en">
@@ -43,18 +45,39 @@ async function generateExportHtml(deckData) {
 }
 
 exports.handler = async (event) => {
+    if (event.httpMethod === "OPTIONS") {
+        return {
+            statusCode: 200,
+            headers: {
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Headers": "Content-Type",
+                "Access-Control-Allow-Methods": "POST, OPTIONS"
+            },
+            body: ""
+        };
+    }
+
     try {
         const body = JSON.parse(event.body);
         const html = await generateExportHtml(body);
 
         return {
             statusCode: 200,
-            headers: { "Content-Type": "text/html" },
+            headers: {
+                "Content-Type": "text/html",
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Headers": "Content-Type",
+                "Access-Control-Allow-Methods": "POST, OPTIONS"
+            },
             body: html
         };
+
     } catch (err) {
         return {
             statusCode: 500,
+            headers: {
+                "Access-Control-Allow-Origin": "*"
+            },
             body: "Error: " + err.message
         };
     }
