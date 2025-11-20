@@ -63,7 +63,7 @@ const defaultSlide = () => ({
   fontSize: "medium",
   background: "#0a9c97",
   image: "",
-  animation: "none",
+  animation: "no_fade-in",
 });
 const defaultDeck = {
   slides: [defaultSlide()],
@@ -209,6 +209,7 @@ modeToggle.addEventListener("change", () => {
 
   hidejsonMsgMsg();
   modeToggle.disabled = true;
+  runCodeBtn.classList.remove("unsaved");
 
   if (isAdvanced) {
     quickEditGrid.classList.remove("active");
@@ -496,8 +497,6 @@ jsonEditor.addEventListener("scroll", () => {
   }, 5);
 });
 
-updateLineNumbers(); // Initialize line numbers
-
 // Run the input code
 runCodeBtn.addEventListener("click", () => {
   hidejsonMsgMsg();
@@ -517,8 +516,12 @@ runCodeBtn.addEventListener("click", () => {
       parsed.slides = parsed.slides.slice(0, maxSlides);
       overLimit = true;
     }
-
+    
+    parsed.slides = parsed.slides.map(slide => normalizeSlide(slide));
+    if (typeof parsed.autoplay !== "boolean") parsed.autoplay = false;
+    if (typeof parsed.loop !== "boolean") parsed.loop = false;
     allSlidesData = parsed;
+    updateAdvancedEditor();
 
     updateSlideDropdown();
     updateSlideCounter();
@@ -540,6 +543,13 @@ runCodeBtn.addEventListener("click", () => {
     jsonMsg.classList.remove("success");
     showjsonMsgMsg("Your code is not formatted correctly.");
   }
+
+    runCodeBtn.classList.remove("unsaved");
+});
+
+// Change color of the Run Code button
+jsonEditor.addEventListener("input", () => {
+  runCodeBtn.classList.add("unsaved");
 });
 
 //----------------------------------
@@ -677,6 +687,48 @@ function resetEditorButtons() {
   });
 }
 
+// Helper function that resets JSON to values if code is invalid
+function normalizeSlide(slide) {
+  const validLayouts = ["layout-overlay", "layout-poster", "layout-split"];
+  const validPositions = ["top", "center", "bottom"];
+  const validFonts = ["small", "medium", "large"];
+  const validAnims = [
+    "fade-in",
+    "fade-in-up",
+    "fade-in-down",
+    "fade-in-left",
+    "fade-in-right",
+    "no_fade-in"
+  ];
+
+  if (typeof slide.layout !== "string" || !validLayouts.includes(slide.layout)) {
+    slide.layout = "layout-overlay";
+  }
+
+  if (typeof slide.position !== "string" || !validPositions.includes(slide.position)) {
+    slide.position = "center";
+  }
+
+  if (typeof slide.fontSize !== "string" || !validFonts.includes(slide.fontSize)) {
+    slide.fontSize = "medium";
+  }
+
+  if (typeof slide.animation !== "string" || !validAnims.includes(slide.animation)) {
+    slide.animation = "no_fade-in";
+  }
+
+  if (typeof slide.background !== "string" ||
+      !/^#[0-9a-f]{3}$|^#[0-9a-f]{6}$/i.test(slide.background)) {
+    slide.background = "#0a9c97";
+  }
+
+  if (typeof slide.image !== "string") {
+    slide.image = "";
+  }
+
+  return slide;
+}
+
 // Helper function to delay calling a function
 function debounce(func, delay = 200) {
   let timer;
@@ -734,3 +786,4 @@ function generateExportHtml() {
 sendToCardPreview(allSlidesData.slides[0]);
 loadSlideToEditor(allSlidesData.slides[0]);
 resetEditorButtons();
+updateLineNumbers();
