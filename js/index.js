@@ -512,6 +512,12 @@ runCodeBtn.addEventListener("click", () => {
       return;
     }
 
+    let overLimit = false;
+    if (parsed.slides.length > maxSlides) {
+      parsed.slides = parsed.slides.slice(0, maxSlides);
+      overLimit = true;
+    }
+
     allSlidesData = parsed;
 
     updateSlideDropdown();
@@ -520,7 +526,11 @@ runCodeBtn.addEventListener("click", () => {
     loadSlideToEditor(allSlidesData.slides[currentSlideIndex]);
     sendToCardPreview(allSlidesData.slides[currentSlideIndex]);
 
-    showjsonMsgMsg("Slide deck successfully updated!");
+    if(overLimit){
+      showjsonMsgMsg(`Slide deck successfully updated! Only the first ${maxSlides} slides were applied.`);
+    }else{
+      showjsonMsgMsg("Slide deck successfully updated!");
+    }
 
     jsonMsg.classList.add("success");
     jsonMsg.classList.remove("warn");
